@@ -631,3 +631,323 @@ button, a, input, select, textarea {
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
+/* ============================================================================
+   PROFILE PAGE
+   ============================================================================ */
+
+.profile-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.profile-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+.profile-header {
+    margin-bottom: 25px;
+}
+
+.profile-avatar {
+    font-size: 64px;
+    margin-bottom: 15px;
+}
+
+.profile-header h3 {
+    color: #282c3f;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.profile-stats {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+    color: #fc8019;
+}
+
+.stat-label {
+    display: block;
+    font-size: 13px;
+    color: #686b78;
+    margin-top: 4px;
+}
+
+.profile-edit {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.profile-edit h3 {
+    color: #282c3f;
+    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 600;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+/* ============================================================================
+   SEARCH BAR
+   ============================================================================ */
+
+.search-bar {
+    margin-bottom: 25px;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 16px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    outline: none;
+    transition: all 0.3s;
+    background-color: #fff;
+}
+
+.search-bar input:focus {
+    border-color: #fc8019;
+    box-shadow: 0 0 0 3px rgba(252, 128, 25, 0.1);
+}
+
+.search-result-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    transition: all 0.2s;
+}
+
+.search-result-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ============================================================================
+   CART QUANTITY CONTROLS
+   ============================================================================ */
+
+.qty-controls {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border: 1px solid #d4d5d9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.qty-btn {
+    background-color: #fff;
+    border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fc8019;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.qty-btn:hover {
+    background-color: #fff5eb;
+}
+
+.qty-value {
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #282c3f;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* ============================================================================
+   CANCEL ORDER BUTTON
+   ============================================================================ */
+
+.cancel-order-btn {
+    background-color: transparent;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.cancel-order-btn:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ============================================================================
+   ADMIN MANAGE SECTIONS
+   ============================================================================ */
+
+.manage-restaurant-card {
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.manage-restaurant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.manage-items-list {
+    padding: 5px 20px;
+}
+
+.manage-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    color: #282c3f;
+}
+
+.manage-item-row:last-child {
+    border-bottom: none;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.delete-btn.small {
+    padding: 5px 12px;
+    font-size: 12px;
+}
+
+.rename-btn {
+    background-color: transparent;
+    color: #fc8019;
+    border: 1px solid #fc8019;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.rename-btn:hover {
+    background-color: #fc8019;
+    color: white;
+}
+
+.manage-order-card {
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.manage-order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.manage-order-details {
+    padding: 12px 20px;
+}
+
+.order-item-tag {
+    display: inline-block;
+    background-color: #e8e8e8;
+    color: #282c3f;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin: 3px 4px 3px 0;
+}
+
+.status-select {
+    padding: 6px 10px;
+    border: 1px solid #d4d5d9;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.status-select:focus {
+    outline: none;
+    border-color: #fc8019;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    .profile-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .admin-container {
+        grid-template-columns: 1fr;
+    }
+
+    .manage-restaurant-header,
+    .manage-order-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}
+

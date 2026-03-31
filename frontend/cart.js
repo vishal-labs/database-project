@@ -4,13 +4,16 @@ async function loadCart() {
     const container = document.getElementById('cartItems');
     container.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: #686b78;">Loading cart...</p></div>';
     
+    const user = loadUserInfo();
+    if (!user) {
+        container.innerHTML = '<div class="empty-cart"><p>Please <a href="/login">login</a> to view your cart</p></div>';
+        document.getElementById('checkoutSection').style.display = 'none';
+        return;
+    }
+
     try {
-        console.log('Loading cart...');
-        const response = await fetch('/api/cart');
-        console.log('Cart response status:', response.status);
-        
+        const response = await fetch(`/api/cart?user_id=${user.id}`);
         const data = await response.json();
-        console.log('Cart data:', data);
         
         if (data.success) {
             cartItems = data.cart;
@@ -19,8 +22,7 @@ async function loadCart() {
             container.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: #dc3545;">❌ Error loading cart: ' + (data.message || 'Unknown error') + '</p></div>';
         }
     } catch (error) {
-        console.error('Error loading cart:', error);
-        container.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: #dc3545;">❌ Error: ' + error.message + '</p><p style="color: #686b78; font-size: 14px; margin-top: 10px;">Please check if the server is running.</p></div>';
+        container.innerHTML = '<div style="text-align: center; padding: 40px;"><p style="color: #dc3545;">❌ Error: ' + error.message + '</p></div>';
     }
 }
 
@@ -36,17 +38,22 @@ function displayCart() {
     
     let total = 0;
     container.innerHTML = cartItems.map(item => {
-        const itemTotal = item.price * item.quantity;
+        const itemTotal = parseFloat(item.price) * item.quantity;
         total += itemTotal;
         return `
             <div class="cart-item">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
                     <p style="color: #93959f; font-size: 12px;">${item.restaurant_name}</p>
-                    <p style="color: #686b78; font-size: 13px; margin-top: 5px;">Qty: ${item.quantity}</p>
+                    <p style="color: #686b78; font-size: 13px; margin-top: 5px;">₹${parseFloat(item.price).toFixed(2)} each</p>
                 </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <span class="cart-item-price">₹${itemTotal}</span>
+                    <div class="qty-controls">
+                        <button class="qty-btn" onclick="updateQuantity(${item.item_id}, ${item.quantity - 1})">−</button>
+                        <span class="qty-value">${item.quantity}</span>
+                        <button class="qty-btn" onclick="updateQuantity(${item.item_id}, ${item.quantity + 1})">+</button>
+                    </div>
+                    <span class="cart-item-price">₹${itemTotal.toFixed(2)}</span>
                     <button class="remove-btn" onclick="removeFromCart(${item.item_id})">
                         Remove
                     </button>
@@ -55,43 +62,57 @@ function displayCart() {
         `;
     }).join('');
     
-    container.innerHTML += `<div class="total-price">₹${total}</div>`;
+    container.innerHTML += `<div class="total-price">₹${total.toFixed(2)}</div>`;
     checkoutSection.style.display = 'block';
 }
 
-async function removeFromCart(itemId) {
-    const btn = event.target;
-    const originalText = btn.textContent;
-    
-    // Show loading state
-    btn.disabled = true;
-    btn.textContent = 'Removing...';
-    
+async function updateQuantity(itemId, newQuantity) {
+    const user = loadUserInfo();
+    if (!user) return;
+
     try {
-        console.log('Removing item from cart:', itemId);
+        if (newQuantity <= 0) {
+            // Remove item
+            await removeFromCart(itemId);
+            return;
+        }
+
+        const response = await fetch('/api/cart', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item_id: itemId, quantity: newQuantity, user_id: user.id })
+        });
+        const data = await response.json();
+        if (data.success) {
+            loadCart();
+        } else {
+            showNotification('❌ ' + (data.message || 'Failed to update quantity'), 'error');
+        }
+    } catch (error) {
+        showNotification('❌ Error: ' + error.message, 'error');
+    }
+}
+
+async function removeFromCart(itemId) {
+    const user = loadUserInfo();
+    if (!user) return;
+
+    try {
         const response = await fetch('/api/cart', {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ item_id: itemId })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item_id: itemId, user_id: user.id })
         });
         
         const data = await response.json();
-        console.log('Remove from cart response:', data);
         
         if (data.success) {
             showNotification('✅ Item removed from cart', 'success');
-            loadCart(); // Reload cart
+            loadCart();
         } else {
-            btn.disabled = false;
-            btn.textContent = originalText;
             showNotification('❌ Error: ' + (data.message || 'Failed to remove item'), 'error');
         }
     } catch (error) {
-        console.error('Remove from cart error:', error);
-        btn.disabled = false;
-        btn.textContent = originalText;
         showNotification('❌ Error: ' + error.message, 'error');
     }
 }
@@ -124,7 +145,6 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
     e.preventDefault();
     e.stopPropagation();
     
-    // Check if user is logged in
     const user = loadUserInfo();
     if (!user) {
         alert('Please login to place an order');
@@ -136,7 +156,6 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
     const messageDiv = document.getElementById('checkoutMessage');
     const submitBtn = document.querySelector('#checkoutForm button[type="submit"]');
     
-    // Clear previous messages
     messageDiv.textContent = '';
     messageDiv.className = 'message';
     
@@ -146,25 +165,19 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
         return;
     }
     
-    // Show loading state
     submitBtn.disabled = true;
     submitBtn.textContent = 'Placing Order...';
     messageDiv.textContent = 'Processing your order...';
     messageDiv.className = 'message info';
     
     try {
-        console.log('Placing order with address:', address);
         const response = await fetch('/api/checkout', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ address, user_id: user.id })
         });
         
-        console.log('Checkout response status:', response.status);
         const data = await response.json();
-        console.log('Checkout response data:', data);
         
         if (data.success) {
             messageDiv.textContent = `✅ Order placed successfully! Order ID: ${data.order_id}`;
@@ -172,7 +185,7 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
             document.getElementById('checkoutForm').reset();
             showNotification('✅ Order placed successfully!', 'success');
             setTimeout(() => {
-                loadCart(); // Reload to show empty cart
+                loadCart();
             }, 2000);
         } else {
             messageDiv.textContent = '❌ ' + (data.message || 'Checkout failed');
@@ -181,8 +194,7 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
             submitBtn.textContent = 'Place Order';
         }
     } catch (error) {
-        console.error('Checkout error:', error);
-        messageDiv.textContent = '❌ Error: ' + error.message + '. Please check if the server is running.';
+        messageDiv.textContent = '❌ Error: ' + error.message;
         messageDiv.className = 'message error';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Place Order';
@@ -191,4 +203,3 @@ document.getElementById('checkoutForm').addEventListener('submit', async (e) => 
 
 // Load cart on page load
 loadCart();
-

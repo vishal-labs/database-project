@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Restaurants - Jwiggy</title>
+    <title>Restaurants - Viggy</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🍔 Jwiggy</h1>
+            <h1>🍔 Viggy</h1>
             <nav>
                 <a href="/">Home</a>
                 <a href="/restaurants">Restaurants</a>
@@ -21,9 +21,14 @@
         
         <main>
             <h2 class="page-title">Restaurants</h2>
-            <div id="restaurants" class="restaurants-grid">
-                <p>Loading restaurants...</p>
+            
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="🔍 Search for dishes..." oninput="handleSearch(this.value)">
             </div>
+            <div id="searchResults" style="display: none;"></div>
+            
+            <div id="restaurants" class="restaurants-grid"></div>
         </main>
     </div>
     
@@ -31,4 +36,3 @@
     <script src="restaurants.js"></script>
 </body>
 </html>
-

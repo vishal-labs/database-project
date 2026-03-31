@@ -37,6 +37,7 @@ function updateHeader() {
             userInfo.className = 'user-info';
             userInfo.innerHTML = `
                 <span class="username">👤 ${user.username}</span>
+                <a href="/profile" class="orders-link">Profile</a>
                 <a href="/orders" class="orders-link">Orders</a>
                 ${user.is_admin ? '<a href="/admin" class="admin-link">Admin Panel</a>' : ''}
                 <button onclick="logout()" class="logout-btn">Logout</button>

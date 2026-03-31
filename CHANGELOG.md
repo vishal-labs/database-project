@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 - ✅ Order history feature added
 - ✅ Order history page with detailed order information
 - ✅ Orders link added to header for logged-in users
-- ✅ All "Swiggy Clone" references replaced with "Jwiggy"
+- ✅ All "Swiggy Clone" references replaced with "Viggy"
 
 ### ✅ Just Completed:
 - Admin login check implemented (vishal/password)

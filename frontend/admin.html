@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - Jwiggy</title>
+    <title>Admin Panel - Viggy</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>🍔 Jwiggy</h1>
+            <h1>🍔 Viggy</h1>
             <nav>
                 <a href="/">Home</a>
                 <a href="/restaurants">Restaurants</a>
@@ -66,6 +66,22 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Manage Restaurants Section -->
+            <div class="admin-section" style="margin-top: 30px;">
+                <h3>Manage Restaurants & Items</h3>
+                <div id="manageRestaurants">
+                    <p style="text-align: center; padding: 20px; color: #686b78;">Loading restaurants...</p>
+                </div>
+            </div>
+            
+            <!-- Manage Orders Section -->
+            <div class="admin-section" style="margin-top: 30px;">
+                <h3>Manage Orders</h3>
+                <div id="manageOrders">
+                    <p style="text-align: center; padding: 20px; color: #686b78;">Loading orders...</p>
+                </div>
+            </div>
         </main>
     </div>
     
@@ -73,4 +89,3 @@
     <script src="admin.js"></script>
 </body>
 </html>
-

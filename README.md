@@ -1,4 +1,4 @@
-# Jwiggy - Simple Food Ordering Application
+# Viggy - Simple Food Ordering Application
 
 A lightweight food ordering application built with Flask backend and vanilla JavaScript frontend.
 

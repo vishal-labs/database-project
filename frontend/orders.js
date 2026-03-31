@@ -15,12 +15,8 @@ async function loadOrders(userId) {
     container.innerHTML = '<p style="text-align: center; padding: 40px; color: #686b78;">Loading orders...</p>';
     
     try {
-        console.log('Loading orders for user:', userId);
         const response = await fetch(`/api/orders?user_id=${userId}`);
-        console.log('Orders response status:', response.status);
-        
         const data = await response.json();
-        console.log('Orders data:', data);
         
         if (data.success) {
             if (data.orders.length === 0) {
@@ -41,7 +37,6 @@ async function loadOrders(userId) {
             `;
         }
     } catch (error) {
-        console.error('Error loading orders:', error);
         container.innerHTML = `
             <div style="text-align: center; padding: 40px;">
                 <p style="color: #dc3545;">❌ Error: ${error.message}</p>
@@ -57,8 +52,11 @@ function displayOrders(orders) {
         const orderDate = new Date(order.created_at).toLocaleString();
         const statusColor = order.status === 'pending' ? '#ffc107' : 
                            order.status === 'confirmed' ? '#28a745' : 
-                           order.status === 'delivered' ? '#17a2b8' : '#6c757d';
+                           order.status === 'delivered' ? '#17a2b8' : 
+                           order.status === 'cancelled' ? '#dc3545' : '#6c757d';
         
+        const canCancel = order.status === 'pending';
+
         return `
             <div class="order-card">
                 <div class="order-header">
@@ -66,8 +64,11 @@ function displayOrders(orders) {
                         <h3>Order #${order.id}</h3>
                         <p style="color: #686b78; font-size: 14px; margin-top: 5px;">${orderDate}</p>
                     </div>
-                    <div class="order-status" style="background-color: ${statusColor}20; color: ${statusColor}; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px;">
-                        ${order.status.toUpperCase()}
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="order-status" style="background-color: ${statusColor}20; color: ${statusColor}; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 13px;">
+                            ${order.status.toUpperCase()}
+                        </div>
+                        ${canCancel ? `<button class="cancel-order-btn" onclick="cancelOrder(${order.id})">Cancel</button>` : ''}
                     </div>
                 </div>
                 
@@ -101,3 +102,52 @@ function displayOrders(orders) {
     }).join('');
 }
 
+async function cancelOrder(orderId) {
+    if (!confirm('Are you sure you want to cancel this order?')) return;
+
+    const user = loadUserInfo();
+    if (!user) return;
+
+    try {
+        const response = await fetch(`/api/orders/${orderId}/cancel`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: user.id })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showNotification('✅ Order cancelled successfully', 'success');
+            loadOrders(user.id);
+        } else {
+            showNotification('❌ ' + (data.message || 'Failed to cancel order'), 'error');
+        }
+    } catch (error) {
+        showNotification('❌ Error: ' + error.message, 'error');
+    }
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        padding: 15px 20px;
+        background-color: ${type === 'success' ? '#d4edda' : '#f8d7da'};
+        color: ${type === 'success' ? '#155724' : '#721c24'};
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        z-index: 1000;
+        animation: slideIn 0.3s ease;
+    `;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}

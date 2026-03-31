@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Viggy</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍔 Viggy</h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/restaurants">Restaurants</a>
+                <a href="/cart">Cart</a>
+                <a href="/login" style="display: none;">Login</a>
+                <a href="/register" style="display: none;">Register</a>
+            </nav>
+        </header>
+        
+        <main>
+            <h2 class="page-title">My Profile</h2>
+            <div id="profileMessage" class="message"></div>
+            
+            <div class="profile-container">
+                <div class="profile-card">
+                    <div class="profile-header">
+                        <div class="profile-avatar">👤</div>
+                        <h3 id="profileUsername">Loading...</h3>
+                        <p id="profileMemberSince" style="color: #686b78; font-size: 14px;"></p>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="profileOrderCount">0</span>
+                            <span class="stat-label">Orders</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-edit">
+                    <h3>Edit Profile</h3>
+                    <form id="editProfileForm">
+                        <div class="form-group">
+                            <label for="profileEmail">Email Address:</label>
+                            <input type="email" id="profileEmail" name="email" placeholder="Enter your email">
+                        </div>
+                        <button type="submit" class="btn">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="common.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html>

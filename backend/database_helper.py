@@ -122,12 +122,18 @@ TABLES = {
     
     'cart': {
         'name': 'cart',
-        'description': 'Stores items in shopping cart',
+        'description': 'Stores items in shopping cart (user-specific)',
         'columns': {
             'id': {
                 'type': 'INT',
                 'constraints': 'AUTO_INCREMENT PRIMARY KEY',
                 'description': 'Unique cart entry identifier'
+            },
+            'user_id': {
+                'type': 'INT',
+                'constraints': 'NOT NULL',
+                'description': 'Foreign key to users table',
+                'foreign_key': 'users(id) ON DELETE CASCADE'
             },
             'item_id': {
                 'type': 'INT',
@@ -147,9 +153,9 @@ TABLES = {
             }
         },
         'relationships': {
-            'references': ['items'],
+            'references': ['users', 'items'],
             'referenced_by': [],
-            'description': 'Cart contains items (session-based, not user-specific)'
+            'description': 'Cart contains items, scoped to individual users'
         }
     },
     
