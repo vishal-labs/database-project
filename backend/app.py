@@ -3,7 +3,10 @@ from flask_cors import CORS
 import mysql.connector
 from mysql.connector import Error
 import os
+import json
+import time
 from dotenv import load_dotenv
+from kafka import KafkaProducer, KafkaConsumer
 
 load_dotenv()
 
@@ -12,6 +15,43 @@ app = Flask(__name__,
             template_folder='../frontend', 
             static_url_path='')
 CORS(app)
+
+# Kafka configuration for traffic handling
+try:
+    kafka_producer = KafkaProducer(
+        bootstrap_servers=['0.0.0.0:9092'],
+        value_serializer=lambda v: json.dumps(v).encode('utf-8')
+    )
+    print("Successfully connected to Kafka broker.")
+except Exception as e:
+    kafka_producer = None
+    print(f"Failed to connect to Kafka broker: {e}")
+
+try:
+    kafka_consumer = KafkaConsumer(
+        'api-traffic',
+        bootstrap_servers=['0.0.0.0:9092'],
+        auto_offset_reset='latest',
+        enable_auto_commit=True,
+        value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+    )
+except Exception as e:
+    kafka_consumer = None
+    print(f"Failed to create Kafka consumer: {e}")
+
+@app.before_request
+def track_traffic():
+    if kafka_producer and request.path.startswith('/api/'):
+        traffic_data = {
+            'method': request.method,
+            'path': request.path,
+            'ip': request.remote_addr,
+            'timestamp': time.time()
+        }
+        try:
+            kafka_producer.send('api-traffic', value=traffic_data)
+        except Exception as e:
+            print(f"Kafka send error: {e}")
 
 # Database configuration
 DB_CONFIG = {
@@ -834,6 +874,27 @@ def update_order_status(order_id):
     finally:
         if conn:
             conn.close()
+
+@app.route('/api/admin/traffic', methods=['GET'])
+def get_traffic():
+    """Admin endpoint to get live traffic from Kafka"""
+    if not 'kafka_consumer' in globals() or not kafka_consumer:
+        return jsonify({'success': False, 'message': 'Kafka consumer not initialized'}), 500
+    
+    try:
+        # poll for new messages (returns dict of TopicPartition -> records)
+        messages = kafka_consumer.poll(timeout_ms=500)
+        traffic_list = []
+        for tp, records in messages.items():
+            for record in records:
+                if record.value:
+                    traffic_list.append(record.value)
+        
+        # We can also add some dummy data if we want, but returning the list is fine
+        return jsonify({'success': True, 'traffic': traffic_list})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error reading from Kafka: {str(e)}'}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
